@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "awesome-snackbar": "^2.0.7",
     "axios": "^0.27.2",
     "ethereum-cryptography": "^2.0.0",
     "react": "^18.2.0",
