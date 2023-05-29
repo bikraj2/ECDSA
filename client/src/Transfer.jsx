@@ -2,7 +2,8 @@ import { useState } from 'react';
 import server from './server';
 import { secp256k1 } from 'ethereum-cryptography/secp256k1';
 import { keccak256 } from 'ethereum-cryptography/keccak';
-import { utf8ToBytes } from 'ethereum-cryptography/utils';
+import { toHex, utf8ToBytes } from 'ethereum-cryptography/utils';
+import Snackbar from 'awesome-snackbar';
 function Transfer({ address, setBalance, privateKey }) {
   const [sendAmount, setSendAmount] = useState('');
   const [recipient, setRecipient] = useState('');
@@ -11,25 +12,41 @@ function Transfer({ address, setBalance, privateKey }) {
 
   async function transfer(evt) {
     evt.preventDefault();
-    const bytes = utf8ToBytes(sendAmount);
-    const hash = keccak256(bytes);
-    const signature = secp256k1.sign(hash, privateKey);
-    console.log(signature.r);
+
     try {
+      const bytes = utf8ToBytes(sendAmount);
+      const hash = keccak256(bytes);
+      const hexHash = toHex(hash);
+
+      const signature = secp256k1.sign(hexHash, privateKey);
+      console.log(signature.r);
       const {
         data: { balance },
       } = await server.post(`send`, {
         signature: {
-          hash: hash,
+          hash: hexHash,
           r: `${signature.r}`,
-          s: `${signature.r}`,
+          s: `${signature.s}`,
           bit: `${signature.recovery}`,
         },
         recipient,
+        amount: sendAmount,
       });
       setBalance(balance);
     } catch (ex) {
       console.log(ex);
+      new Snackbar(`${ex} <a class='bold'>Try Again!</a>`, {
+        position: 'bottom-center',
+        style: {
+          container: [
+            ['background-color', 'red'],
+            ['border-radius', '5px'],
+          ],
+          message: [['color', '#eee']],
+          bold: [['font-weight', 'bold']],
+          actionButton: [['color', 'white']],
+        },
+      });
     }
   }
 

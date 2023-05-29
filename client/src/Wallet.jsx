@@ -1,7 +1,7 @@
 import server from './server';
 import * as secp from 'ethereum-cryptography/secp256k1';
 import { toHex } from 'ethereum-cryptography/utils';
-import Snackbar from 'awesome-snackbar';
+
 function Wallet({
   address,
   setAddress,
@@ -27,7 +27,7 @@ function Wallet({
         setBalance(0);
       }
     } catch (e) {
-      if (privateKey.length > 0) {
+      
         new Snackbar(`Incorrect Private Key <a class='bold'>Try Again!</a>`, {
           position: 'bottom-center',
           style: {
@@ -40,7 +40,7 @@ function Wallet({
             actionButton: [['color', 'white']],
           },
         });
-      }
+      
     }
   }
 
